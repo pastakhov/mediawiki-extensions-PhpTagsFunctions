@@ -1,13 +1,15 @@
 <?php
+
 namespace PhpTagsObjects;
 
 /**
- * Description of PhpTagsFuncNativeObject
- *
  * @author pastakhov
  */
 class PhpTagsFuncNativeObject extends PhpTagsFunc {
 
+	/**
+	 * @return bool
+	 */
 	public function m___construct() {
 		$arguments = func_get_args();
 		foreach ( $arguments as &$arg ) {
@@ -113,6 +115,10 @@ class PhpTagsFuncNativeObject extends PhpTagsFunc {
 		return parent::__callStatic( $name, $arguments );
 	}
 
+	/**
+	 * @param string $class_name
+	 * @return bool
+	 */
 	public function isInstanceOf( $class_name ) {
 		return $this->value instanceof $class_name;
 	}

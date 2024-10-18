@@ -1,18 +1,21 @@
 <?php
+
 namespace PhpTagsObjects;
 
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 
 /**
- *
- *
- * @file PhpTagsFuncUseful.php
  * @ingroup PhpTagsFunctions
  * @author Pavel Astakhov <pastakhov@yandex.ru>
  * @license GPL-2.0-or-later
  */
 class PhpTagsFuncUseful extends \PhpTags\GenericObject {
 
+	/**
+	 * @param string $constantName
+	 * @return string
+	 */
 	public static function getConstantValue( $constantName ) {
 		switch ( $constantName ) {
 			case 'UUID':
@@ -23,20 +26,36 @@ class PhpTagsFuncUseful extends \PhpTags\GenericObject {
 		parent::getConstantValue( $constantName );
 	}
 
+	/**
+	 * @return string
+	 */
 	public static function f_uuid_create() {
 		$gen = MediaWikiServices::getInstance()->getGlobalIdGenerator();
 
 		return $gen->newUUIDv4();
 	}
 
+	/**
+	 * @param string $value
+	 * @return mixed
+	 */
 	public static function f_mw_json_decode( $value ) {
 		return \FormatJson::decode( $value, true );
 	}
 
+	/**
+	 * @param mixed $value
+	 * @return string
+	 */
 	public static function f_mw_json_encode( $value ) {
 		return \FormatJson::encode( $value, false, \FormatJson::UTF8_OK );
 	}
 
+	/**
+	 * @param int $index
+	 * @param string|null $default
+	 * @return string
+	 */
 	public static function f_get_arg( $index, $default = null ) {
 		$args = self::f_get_args();
 		if ( isset( $args[$index] ) || array_key_exists( $index, $args ) ) {
@@ -45,6 +64,9 @@ class PhpTagsFuncUseful extends \PhpTags\GenericObject {
 		return $default;
 	}
 
+	/**
+	 * @return string[]
+	 */
 	public static function f_get_args() {
 		$variables = \PhpTags\Runtime::getVariables();
 		$argv = $variables['argv'];
@@ -52,11 +74,20 @@ class PhpTagsFuncUseful extends \PhpTags\GenericObject {
 		return $argv;
 	}
 
+	/**
+	 * @return int
+	 */
 	public static function f_num_args() {
 		$variables = \PhpTags\Runtime::getVariables();
 		return $variables['argc'] - 1;
 	}
 
+	/**
+	 * @param mixed $template
+	 * @param array $parameters
+	 * @param mixed|null $default
+	 * @return string
+	 */
 	public static function f_transclude( $template, $parameters = [], $default = null ) {
 		$parser = \PhpTags\Renderer::getParser();
 		$frame = \PhpTags\Renderer::getFrame();
@@ -77,14 +108,14 @@ class PhpTagsFuncUseful extends \PhpTags\GenericObject {
 			$title = false;
 		} elseif ( $template instanceof \PhpTags\GenericObject ) {
 			$title = $template->value;
-			if ( !$title instanceof \Title ) {
+			if ( !( $title instanceof Title ) ) {
 				if ( $template->getName() !== 'WTitle' ) {
 					throw new \PhpTags\PhpTagsException( \PhpTags\PhpTagsException::FATAL_OBJECT_COULD_NOT_BE_CONVERTED, [ $template->getName(), 'WTitle' ] );
 				}
 				throw new \PhpTags\HookException( 'Wrong WTitle object', \PhpTags\HookException::EXCEPTION_FATAL );
 			}
 		} elseif ( is_string( $template ) ) {
-			$title = \Title::newFromText( $template, NS_TEMPLATE );
+			$title = Title::newFromText( $template, NS_TEMPLATE );
 		} else {
 			throw new \PhpTags\PhpTagsException( \PhpTags\PhpTagsException::WARNING_EXPECTS_PARAMETER, [ 1, 'string or WTitle', gettype( $template ) ] );
 		}

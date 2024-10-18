@@ -1,4 +1,5 @@
 <?php
+
 namespace PhpTagsObjects;
 
 /**
@@ -10,7 +11,10 @@ class PhpTagsWebRequest extends \PhpTags\GenericObject {
 
 	/**
 	 * Get a scalar or null if the parameter was not passed
-	 * @global \WebRequest $wgRequest
+	 *
+	 * @param string $name
+	 * @param mixed|null $default
+	 * @return string|null
 	 */
 	public static function s_getVal( $name, $default = null ) {
 		global $wgRequest;
@@ -25,6 +29,10 @@ class PhpTagsWebRequest extends \PhpTags\GenericObject {
 	 * be used for form "<textarea>" and "<input>" fields. Used for
 	 * user-supplied freeform text input (for which input transformations may
 	 * be required - e.g.  Esperanto x-coding).
+	 *
+	 * @param string $name
+	 * @param mixed|null $default
+	 * @return string
 	 */
 	public static function s_getText( $name, $default = '' ) {
 		global $wgRequest;
@@ -34,7 +42,10 @@ class PhpTagsWebRequest extends \PhpTags\GenericObject {
 
 	/**
 	 * Get an integer or 0 if the parameter was not passed
-	 * @global \WebRequest $wgRequest
+	 *
+	 * @param string $name
+	 * @param mixed|null $default
+	 * @return int
 	 */
 	public static function s_getInt( $name, $default = 0 ) {
 		global $wgRequest;
@@ -44,7 +55,10 @@ class PhpTagsWebRequest extends \PhpTags\GenericObject {
 
 	/**
 	 * Get a boolean or false if the parameter was not passed
-	 * @global \WebRequest $wgRequest
+	 *
+	 * @param string $name
+	 * @param mixed|null $default
+	 * @return bool
 	 */
 	public static function s_getBool( $name, $default = false ) {
 		global $wgRequest;
@@ -55,7 +69,10 @@ class PhpTagsWebRequest extends \PhpTags\GenericObject {
 	/**
 	 * Get an array or null if the parameter was not passed.
 	 * If the parameter is a scalar, it will return an array with a single element.
-	 * @global \WebRequest $wgRequest
+	 *
+	 * @param string $name
+	 * @param mixed|null $default
+	 * @return array|null
 	 */
 	public static function s_getArray( $name, $default = null ) {
 		global $wgRequest;
@@ -65,7 +82,9 @@ class PhpTagsWebRequest extends \PhpTags\GenericObject {
 
 	/**
 	 * Return a boolean whether the parameter was passed, this is useful for checkboxes.
-	 * @global \WebRequest $wgRequest
+	 *
+	 * @param string $name
+	 * @return bool
 	 */
 	public static function s_getCheck( $name ) {
 		global $wgRequest;
@@ -76,7 +95,8 @@ class PhpTagsWebRequest extends \PhpTags\GenericObject {
 	/**
 	 * Returns true if the present request was reached by a POST operation
 	 * false otherwise (GET, HEAD, or command-line).
-	 * @global \WebRequest $wgRequest
+	 *
+	 * @return bool
 	 */
 	public static function s_wasPosted() {
 		global $wgRequest;
@@ -86,7 +106,10 @@ class PhpTagsWebRequest extends \PhpTags\GenericObject {
 
 	/**
 	 * Get a cookie from the $_COOKIE jar
-	 * @global \WebRequest $wgRequest
+	 *
+	 * @param string $key
+	 * @param mixed|null $default
+	 * @return mixed
 	 */
 	public static function s_getCookie( $key, $default = null ) {
 		global $wgRequest;
@@ -97,7 +120,8 @@ class PhpTagsWebRequest extends \PhpTags\GenericObject {
 	/**
 	 * Extracts the given named values into an array.
 	 * If no arguments are given, returns all input values.
-	 * @global \WebRequest $wgRequest
+	 *
+	 * @return array
 	 */
 	public static function s_getValues() {
 		global $wgRequest;

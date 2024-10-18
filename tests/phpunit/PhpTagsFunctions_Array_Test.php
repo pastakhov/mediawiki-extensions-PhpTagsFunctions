@@ -1,4 +1,5 @@
 <?php
+
 namespace PhpTags;
 
 /**
@@ -26,7 +27,9 @@ class PhpTagsFunctions_Array_Test extends \PHPUnit\Framework\TestCase {
 	public function testRun_array_change_key_case_1() {
 		$this->assertEquals(
 				[ '1', '4' ],
-				Runtime::runSource( '$input_array = array("FirSt" => 1, "SecOnd" => 4); $res = array_change_key_case($input_array, CASE_UPPER); echo $res["FIRST"], $res["SECOND"];' )
+				Runtime::runSource( '$input_array = array("FirSt" => 1, "SecOnd" => 4); ' .
+					'$res = array_change_key_case($input_array, CASE_UPPER); ' .
+					'echo $res["FIRST"], $res["SECOND"];' )
 				);
 	}
 
@@ -98,7 +101,9 @@ class PhpTagsFunctions_Array_Test extends \PHPUnit\Framework\TestCase {
 	}
 
 	public function testRun_array_combine_exception_3() {
-		$return = Runtime::runSource( '$a = array("green", new DateTime(), "yellow"); $b = array("avocado", "apple", "banana"); $c = array_combine($a, $b); print_r($c);', [ 'Test' ] );
+		$return = Runtime::runSource( '$a = array("green", new DateTime(), "yellow"); ' .
+			'$b = array("avocado", "apple", "banana"); ' .
+			'$c = array_combine($a, $b); print_r($c);', [ 'Test' ] );
 		$this->assertEquals(
 				(string)new PhpTagsException( PhpTagsException::FATAL_OBJECT_COULD_NOT_BE_CONVERTED, [ 'DateTime', 'string' ], 1, 'Test' ),
 				(string)$return[0]

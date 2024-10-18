@@ -1,9 +1,8 @@
 <?php
+
 namespace PhpTagsObjects;
 
 /**
- * Description of PhpTagsFuncNativeObject
- *
  * @author pastakhov
  */
 class PhpTagsFuncDatePeriod extends PhpTagsFuncNativeObject {

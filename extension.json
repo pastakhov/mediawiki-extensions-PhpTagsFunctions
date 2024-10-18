@@ -7,7 +7,7 @@
 	"license-name": "GPL-2.0-or-later",
 	"type": "phptags",
 	"requires": {
-		"MediaWiki": ">= 1.35.0",
+		"MediaWiki": ">= 1.39.4",
 		"extensions": {
 			"PhpTags": ">= 5.12"
 		}
@@ -18,7 +18,7 @@
 		]
 	},
 	"AutoloadClasses": {
-		"PhpTagsFunctionsHooks": "PhpTagsFunctions.hooks.php",
+		"PhpTagsObjects\\PhpTagsFunctionsHooks": "includes/PhpTagsFunctionsHooks.php",
 		"PhpTagsObjects\\PhpTagsFunc": "includes/PhpTagsFunc.php",
 		"PhpTagsObjects\\PhpTagsFuncUseful": "includes/PhpTagsFuncUseful.php",
 		"PhpTagsObjects\\PhpTagsFuncNativeObject": "includes/PhpTagsFuncNativeObject.php",
@@ -26,8 +26,8 @@
 		"PhpTagsObjects\\PhpTagsWebRequest": "includes/PhpTagsWebRequest.php"
 	},
 	"Hooks": {
-		"ParserFirstCallInit": "PhpTagsFunctionsHooks::onParserFirstCallInit",
-		"PhpTagsRuntimeFirstInit": "PhpTagsFunctionsHooks::onPhpTagsRuntimeFirstInit"
+		"ParserFirstCallInit": "PhpTagsObjects\\PhpTagsFunctionsHooks::onParserFirstCallInit",
+		"PhpTagsRuntimeFirstInit": "PhpTagsObjects\\PhpTagsFunctionsHooks::onPhpTagsRuntimeFirstInit"
 	},
 	"config": {
 		"PhpTagsFunctionDumpDepth": 3,

@@ -1,20 +1,20 @@
 <?php
+
 namespace PhpTagsObjects;
 
 use MediaWiki\MediaWikiServices;
+use PhpTags\iRawOutput;
 use PhpTags\PhpTagsException;
 use PhpTags\Runtime;
 
 /**
- *
- *
- * @file PhpTagsFunc.php
  * @ingroup PhpTagsFunctions
  * @author Pavel Astakhov <pastakhov@yandex.ru>
  * @license GPL-2.0-or-later
  */
 class PhpTagsFunc extends \PhpTags\GenericObject {
 
+	/** @var array<string,true> */
 	private static $bannedFunctions = [
 		'compact' => true,
 		'extract' => true,
@@ -46,6 +46,11 @@ class PhpTagsFunc extends \PhpTags\GenericObject {
 		'parse_str' => true,
 	];
 
+	/**
+	 * @param string $name
+	 * @param array $arguments
+	 * @return mixed
+	 */
 	public static function __callStatic( $name, $arguments ) {
 		[ $callType, $subname ] = explode( '_', $name, 2 );
 
@@ -61,6 +66,10 @@ class PhpTagsFunc extends \PhpTags\GenericObject {
 		return parent::__callStatic( $name, $arguments );
 	}
 
+	/**
+	 * @param array $arguments
+	 * @return bool
+	 */
 	public static function array_multisort( $arguments ) {
 		$n = 0;
 
@@ -80,6 +89,10 @@ class PhpTagsFunc extends \PhpTags\GenericObject {
 		return call_user_func_array( 'array_multisort', $arguments );
 	}
 
+	/**
+	 * @param string $value
+	 * @return int
+	 */
 	public static function f_hexdec( $value ) {
 		if ( $value && $value !== true && !ctype_xdigit( $value ) ) {
 			Runtime::pushException( new PhpTagsException( PhpTagsException::DEPRECATED_INVALID_CHARACTERS ) );
@@ -88,6 +101,10 @@ class PhpTagsFunc extends \PhpTags\GenericObject {
 		return hexdec( $value );
 	}
 
+	/**
+	 * @param array &$var
+	 * @return array|false
+	 */
 	public static function f_each( &$var ) {
 		// The each() function is deprecated.
 		$key = key( $var );
@@ -106,24 +123,41 @@ class PhpTagsFunc extends \PhpTags\GenericObject {
 		];
 	}
 
+	/**
+	 * @param mixed $var
+	 * @return bool
+	 */
 	public static function f_boolval( $var ) {
 		return (bool)$var;
 	}
 
+	/**
+	 * @return array
+	 */
 	public static function f_get_defined_vars() {
 		$variables = \PhpTags\Runtime::getVariables();
 		return array_combine( array_keys( $variables ), array_map( "reset", array_chunk( $variables, 1 ) ) );
 	}
 
+	/**
+	 * @return array
+	 */
 	public static function f_get_defined_functions() {
 		return \PhpTags\Hooks::getDefinedFunctions();
 	}
 
+	/**
+	 * @param string $function_name
+	 * @return bool
+	 */
 	public static function f_function_exists( $function_name ) {
 		$functions = \PhpTags\Hooks::getDefinedFunctions();
 		return isset( $functions[$function_name] );
 	}
 
+	/**
+	 * @return iRawOutput
+	 */
 	public static function f_printf() {
 		$args = func_get_args();
 		$v = [];
@@ -134,6 +168,9 @@ class PhpTagsFunc extends \PhpTags\GenericObject {
 		return new \PhpTags\outPrint( strlen( $ret ), $ret, false, false );
 	}
 
+	/**
+	 * @return iRawOutput
+	 */
 	public static function f_vprintf() {
 		$args = func_get_args();
 		$v = [];
@@ -144,12 +181,20 @@ class PhpTagsFunc extends \PhpTags\GenericObject {
 		return new \PhpTags\outPrint( strlen( $ret ), $ret, false, false );
 	}
 
+	/**
+	 * @param mixed $expression
+	 * @param bool $return
+	 * @return string|iRawOutput
+	 */
 	public static function f_var_export( $expression, $return = false ) {
 		$v = self::getValidDumpValue( $expression );
 		$ret = var_export( $v, true );
 		return $return ? $ret : new \PhpTags\outPrint( null, $ret );
 	}
 
+	/**
+	 * @return iRawOutput
+	 */
 	public static function f_var_dump() {
 		$args = func_get_args();
 		$v = [];
@@ -161,12 +206,22 @@ class PhpTagsFunc extends \PhpTags\GenericObject {
 		return new \PhpTags\outPrint( null, ob_get_clean() );
 	}
 
+	/**
+	 * @param mixed $expression
+	 * @param bool $return
+	 * @return string|iRawOutput
+	 */
 	public static function f_print_r( $expression, $return = false ) {
 		$v = self::getValidDumpValue( $expression );
 		$ret = print_r( $v, true );
 		return $return ? $ret : new \PhpTags\outPrint( true, $ret );
 	}
 
+	/**
+	 * @param mixed $expression
+	 * @param int $arrayDepth
+	 * @return mixed
+	 */
 	private static function getValidDumpValue( $expression, $arrayDepth = 0 ) {
 		global $wgPhpTagsFunctionDumpDepth, $wgPhpTagsFunctionDumpAmount;
 
@@ -197,6 +252,12 @@ class PhpTagsFunc extends \PhpTags\GenericObject {
 
 	/**
 	 * @todo remove it for PHP >= 5.4.0
+	 * @param string $pattern
+	 * @param string $subject
+	 * @param array|null &$matches
+	 * @param int $flags
+	 * @param int $offset
+	 * @return int|false
 	 */
 	public static function f_preg_match_all( $pattern, $subject, &$matches = null, $flags = PREG_PATTERN_ORDER, $offset = 0 ) {
 		// 1) PhpTags\PhpTagsFunctions_PCRE_Test::testRun_preg_match_all_1
@@ -215,6 +276,9 @@ class PhpTagsFunc extends \PhpTags\GenericObject {
 		return preg_match_all( $pattern, $subject, $matches, $flags, $offset );
 	}
 
+	/**
+	 * @return string
+	 */
 	protected static function f_preg_replace() {
 		$args = func_get_args();
 		try {
@@ -234,6 +298,10 @@ class PhpTagsFunc extends \PhpTags\GenericObject {
 		return call_user_func_array( 'preg_replace', $args );
 	}
 
+	/**
+	 * @param string $pattern_value
+	 * @return string
+	 */
 	private static function getValidPattern( $pattern_value ) {
 		$pattern = str_replace( chr( 0 ), '', $pattern_value );
 		// Set basic statics
@@ -278,6 +346,11 @@ class PhpTagsFunc extends \PhpTags\GenericObject {
 		return $startRegex . $endRegex;
 	}
 
+	/**
+	 * @param mixed &$var
+	 * @param string $type
+	 * @return bool
+	 */
 	public static function f_settype( &$var, $type ) {
 		if ( !in_array( $type, [ 'boolean', 'bool', 'integer', 'int', 'float', 'double', 'string', 'array', 'object', 'null' ] ) ) {
 			throw new \PhpTags\HookException( 'Invalid type' );
@@ -291,6 +364,9 @@ class PhpTagsFunc extends \PhpTags\GenericObject {
 		return settype( $var, $type );
 	}
 
+	/**
+	 * @return mixed
+	 */
 	public static function f_max() {
 		$values = func_get_args();
 		if ( func_num_args() === 1 && !is_array( $values[0] ) ) {
@@ -299,6 +375,9 @@ class PhpTagsFunc extends \PhpTags\GenericObject {
 		return call_user_func_array( 'max', $values );
 	}
 
+	/**
+	 * @return mixed
+	 */
 	public static function f_min() {
 		$values = func_get_args();
 		if ( func_num_args() === 1 && !is_array( $values[0] ) ) {
@@ -307,6 +386,9 @@ class PhpTagsFunc extends \PhpTags\GenericObject {
 		return call_user_func_array( 'min', $values );
 	}
 
+	/**
+	 * @return string
+	 */
 	public static function f_implode() {
 		$values = func_get_args();
 
@@ -321,6 +403,9 @@ class PhpTagsFunc extends \PhpTags\GenericObject {
 		return call_user_func_array( 'implode', $values );
 	}
 
+	/**
+	 * @return int
+	 */
 	public static function f_mt_rand() {
 		switch ( func_num_args() ) {
 			case 1:
@@ -331,6 +416,9 @@ class PhpTagsFunc extends \PhpTags\GenericObject {
 		return mt_rand();
 	}
 
+	/**
+	 * @return int
+	 */
 	public static function f_rand() {
 		switch ( func_num_args() ) {
 			case 1:
@@ -386,6 +474,9 @@ class PhpTagsFunc extends \PhpTags\GenericObject {
 		return MediaWikiServices::getInstance()->getContentLanguage()->uc( $str );
 	}
 
+	/**
+	 * @return int
+	 */
 	public static function f_levenshtein() {
 		$argCount = func_num_args();
 
@@ -398,6 +489,12 @@ class PhpTagsFunc extends \PhpTags\GenericObject {
 		return \PhpTags\Hooks::getCallInfo( \PhpTags\Hooks::INFO_RETURNS_ON_FAILURE );
 	}
 
+	/**
+	 * @param string $str
+	 * @param string|array $from
+	 * @param string|null $to
+	 * @return string
+	 */
 	public static function f_strtr( $str, $from, $to = null ) {
 		switch ( func_num_args() ) {
 			case 2:
@@ -413,6 +510,12 @@ class PhpTagsFunc extends \PhpTags\GenericObject {
 		}
 	}
 
+	/**
+	 * @param array $array
+	 * @param int $size
+	 * @param bool $preserve_keys
+	 * @return array
+	 */
 	public static function f_array_chunk( $array, $size, $preserve_keys = false ) {
 		if ( $size < 1 ) {
 			throw new \PhpTags\HookException( 'Size parameter expected to be greater than 0' );
@@ -420,6 +523,11 @@ class PhpTagsFunc extends \PhpTags\GenericObject {
 		return array_chunk( $array, $size, $preserve_keys );
 	}
 
+	/**
+	 * @param array $keys
+	 * @param array $values
+	 * @return array
+	 */
 	public static function f_array_combine( $keys, $values ) {
 		$k = count( $keys );
 		if ( $k !== count( $values ) ) {
@@ -431,10 +539,19 @@ class PhpTagsFunc extends \PhpTags\GenericObject {
 		return array_combine( self::mapArrayKeys( $keys ), $values );
 	}
 
+	/**
+	 * @param array $keys
+	 * @param mixed $values
+	 * @return array
+	 */
 	public static function f_array_fill_keys( $keys, $values ) {
 		return array_fill_keys( self::mapArrayKeys( $keys ), $values );
 	}
 
+	/**
+	 * @param array $array
+	 * @return array
+	 */
 	private static function mapArrayKeys( array $array ) {
 		return array_map(
 			static function ( $key ) {
@@ -450,14 +567,26 @@ class PhpTagsFunc extends \PhpTags\GenericObject {
 		);
 	}
 
+	/**
+	 * @param array $array
+	 * @return int[]
+	 */
 	public static function f_array_count_values( $array ) {
 		return array_count_values( self::filterArrayKeys( $array ) );
 	}
 
+	/**
+	 * @param array $array
+	 * @return array
+	 */
 	public static function f_array_flip( $array ) {
 		return array_flip( self::filterArrayKeys( $array ) );
 	}
 
+	/**
+	 * @param array $array
+	 * @return array
+	 */
 	private static function filterArrayKeys( array $array ) {
 		return array_filter(
 			$array,
@@ -467,6 +596,12 @@ class PhpTagsFunc extends \PhpTags\GenericObject {
 		);
 	}
 
+	/**
+	 * @param int $start_index
+	 * @param int $num
+	 * @param string $value
+	 * @return array
+	 */
 	public static function f_array_fill( $start_index, $num, $value ) {
 		if ( $num < 1 ) {
 			throw new \PhpTags\HookException( 'Number of elements must be positive' );
@@ -483,6 +618,11 @@ class PhpTagsFunc extends \PhpTags\GenericObject {
 		return array_filter( $array );
 	}
 
+	/**
+	 * @param array $array
+	 * @param int $num
+	 * @return string
+	 */
 	public static function f_array_rand( $array, $num = 1 ) {
 		if ( $num < 1 || $num > count( $array ) ) {
 			throw new \PhpTags\HookException( 'Second argument has to be between 1 and the number of elements in the array' );
@@ -490,6 +630,12 @@ class PhpTagsFunc extends \PhpTags\GenericObject {
 		return array_rand( $array, $num );
 	}
 
+	/**
+	 * @param int $start
+	 * @param int $end
+	 * @param int $step
+	 * @return int[]
+	 */
 	public static function f_range( $start, $end, $step = 1 ) {
 		if ( is_numeric( $start ) && is_numeric( $end ) && abs( $step ) > abs( $start - $end ) ) {
 			throw new \PhpTags\HookException( 'step exceeds the specified range' );

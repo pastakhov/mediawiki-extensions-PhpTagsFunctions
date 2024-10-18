@@ -1,4 +1,5 @@
 <?php
+
 namespace PhpTags;
 
 /**
@@ -86,6 +87,7 @@ class PhpTagsFunctions_Var_Test extends \PHPUnit\Framework\TestCase {
 				);
 	}
 
+// phpcs:disable MediaWiki.Commenting.FunctionComment.WrongStyle
 // @todo
 // public function testRun_boolval_10() {
 // $this->assertEquals(
